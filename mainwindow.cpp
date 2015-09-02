@@ -7,28 +7,50 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //get file name
     QString fileName = QFileDialog::getOpenFileName();
+
+    //read image file
     cv::Mat img;
-    img = cv::imread(fileName.toStdString(),CV_8UC1);
+    img = cv::imread(fileName.toStdString());
+
+    //show image
     cv::imshow("Picture",img);
+
+    //clone image
     cv::Mat binaryImg = img.clone();
-//    cv::threshold(img,binaryImg,127,255,0);
 
-        for(int i=0;i<img.rows;i++)
+    //thresholding
+    for(int i=0;i<img.rows;i++)
+    {
+        for(int j=0;j<img.cols;j++)
         {
-            for(int j=0;j<img.cols;j++)
-            {
-                if(img.at<uchar>(i,j) > 127)
-                {
-                    binaryImg.at<uchar>(i,j) = 255;
-                }
 
-                else
-                {
-                    binaryImg.at<uchar>(i,j) = 0;
-                }
+            if(img.at<cv::Vec3b>(i,j)[2] == 255 && img.at<cv::Vec3b>(i,j)[0] == 0 &&img.at<cv::Vec3b>(i,j)[1] == 0)
+            {
+                //binaryImg.at<cv::Vec3b>(i,j) = cv::Vec3b(255,255,255);
+                //0 -> blue
+                //1 -> green
+                //2 -> red
+
+
+                //for(int m=0;m<img.channels();m++)
+                //{
+                //    binaryImg.data[i*img.cols*img.channels()+j*img.channels()+m] = 255;
+                //}
+
+                binaryImg.at<cv::Vec3b>(i,j)[0] = 255;
+                binaryImg.at<cv::Vec3b>(i,j)[1] = 255;
+                binaryImg.at<cv::Vec3b>(i,j)[2] = 255;
+            }
+            else
+            {
+                binaryImg.at<cv::Vec3b>(i,j)[0] = 0;
+                binaryImg.at<cv::Vec3b>(i,j)[1] = 0;
+                binaryImg.at<cv::Vec3b>(i,j)[2] = 0;
             }
         }
+    }
     cv::imshow("Binary",binaryImg);
 
 }
